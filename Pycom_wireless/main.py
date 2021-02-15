@@ -1,25 +1,35 @@
 import pycom
 from network import Bluetooth
-import ubinascii
-bluetooth = Bluetooth()
+import time
+bt = Bluetooth()
+bt.start_scan(-1)
 
-# scan until we can connect to any BLE device around
-bluetooth.start_scan(-1)
-adv = None
-
-# server_mac = "2462ABf4E63A"
+print("Initialisation completed")
 
 while True:
-    adv = bluetooth.get_adv()
-    if adv:
-        try:
-            # vprint("Trying to connect ")
-            # bluetooth.connect('2462ABf4E63A')
-            bluetooth.connect(adv.mac)
-        except:
-            # start scanning again
-            bluetooth.start_scan(-1)
-            continue
-        break
-print("Connected to device with addr = {}".format(ubinascii.hexlify(adv.mac)))
+  adv = bt.get_adv()
+  if adv and bt.resolve_adv_data(adv.data, Bluetooth.ADV_NAME_CMPL) == 'LoPy':
+      try:
+          conn = bt.connect(adv.mac)
+          services = conn.services()
+          for service in services:
+              time.sleep(0.050)
+              if type(service.uuid()) == bytes:
+                  print('Reading chars from service = {}'.format(service.uuid()))
+              else:
+                  print('Reading chars from service = %x' % service.uuid())
+              chars = service.characteristics()
+              for char in chars:
+                  if (char.properties() & Bluetooth.PROP_READ):
+                      print('char {} value = {}'.format(char.uuid(), char.read()))
+          conn.disconnect()
+          break
+      except:
+          print("Error while connecting or reading from the BLE device")
+          break
+  else:
+      time.sleep(0.050)
+
+
+
 # pycom.rgbled(0xaa0000)
