@@ -1,10 +1,13 @@
-import pycom
 from network import Bluetooth
+import binascii
 import time
 bt = Bluetooth()
 bt.start_scan(-1)
 
-print("Initialisation completed")
+def char_notify_callback(char):
+    char_value = (char.value())
+    print("Got new char: {} value: {}".format(char.uuid(), char_value))
+
 
 while True:
   adv = bt.get_adv()
@@ -14,14 +17,16 @@ while True:
           services = conn.services()
           for service in services:
               time.sleep(0.050)
-              if type(service.uuid()) == bytes:
-                  print('Reading chars from service = {}'.format(service.uuid()))
+              if service.uuid() == 0x3040:
+                  print('Service found')
+                  print('Reading e chars from service = {}'.format(service.uuid()))
               else:
-                  print('Reading chars from service = %x' % service.uuid())
-              chars = service.characteristics()
-              for char in chars:
-                  if (char.properties() & Bluetooth.PROP_READ):
-                      print('char {} value = {}'.format(char.uuid(), char.read()))
+                  print('Reading b chars from service = %x' % service.uuid()) #Service uuid in hex
+                  chars = service.characteristics()
+                  print(str(chars))
+                  for char in chars:
+                      if (char.properties() & Bluetooth.PROP_READ):
+                          print('char {} value = {}'.format(char.uuid(), char.value()))
           conn.disconnect()
           break
       except:
@@ -29,7 +34,3 @@ while True:
           break
   else:
       time.sleep(0.050)
-
-
-
-# pycom.rgbled(0xaa0000)

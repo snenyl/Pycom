@@ -43,25 +43,26 @@ py = Pysense()
 
 
 Bluetooth().set_advertisement(
-    name='LoPy', service_uuid=12345)
+    name='LoPy', service_uuid=0x3040) # Service in dec
 
 Bluetooth().callback(trigger=Bluetooth.CLIENT_CONNECTED |
                      Bluetooth.CLIENT_DISCONNECTED, handler=connectionCallback)
 
 Bluetooth().advertise(True)
 
-srv = Bluetooth().service(uuid=12345, isprimary=True, nbr_chars=2, start=True)
+srv = Bluetooth().service(uuid=0x3040, isprimary=True, nbr_chars=1, start=True)
 
-char1 = srv.characteristic(uuid=54321, properties=Bluetooth.PROP_INDICATE |
-                           Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY, value=0xff0000)
+char1 = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0xff0000)
 
-char3 = srv.characteristic(uuid=54321, properties=Bluetooth.PROP_INDICATE |
-                           Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY, value=0x00ff00)
+                           # Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY
 
-char2 = srv.characteristic(uuid=64321, value=0xff00)
+# char3 = srv.characteristic(uuid=54321, properties=Bluetooth.PROP_INDICATE |
+#                            Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY, value=0x00ff00)
+#
+# char2 = srv.characteristic(uuid=64321, value=0xff00)
 
-char1_cb = char2.callback(
-    trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
+# char1_cb = char2.callback(
+#     trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
 
 while True:
     time.sleep(0.01)
@@ -72,5 +73,5 @@ while True:
     if BLEConnected:
         #char1.value(0x42)
         char1.value(acc_roll)
-        char3.value(acc_pitch)
+        #char3.value(acc_pitch)
         print("Roll: " + str(acc_roll) + "Pitch: " + str(acc_pitch))
