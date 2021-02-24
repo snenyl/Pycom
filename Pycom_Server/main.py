@@ -41,7 +41,7 @@ py = Pysense()
 # sensor = SHT35(I2C(0, I2C.MASTER, baudrate=20000))
 # Bluetooth().set_pin(463523)
 
-
+Bluetooth().init()
 Bluetooth().set_advertisement(
     name='LoPy', service_uuid=0x3040) # Service in dec
 
@@ -52,7 +52,7 @@ Bluetooth().advertise(True)
 
 srv = Bluetooth().service(uuid=0x3040, isprimary=True, nbr_chars=1, start=True)
 
-char1 = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0xff0000)
+char1 = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0xFF0000)
 
                            # Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY
 
