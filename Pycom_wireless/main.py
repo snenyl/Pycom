@@ -4,7 +4,7 @@ import ubinascii
 bt = Bluetooth()
 bt.start_scan(-1)
 
-bt.init() # This is important for it to work!
+bt.init() # This is important for it to work! Put on front fo bt.start?
 
 tilt = 0
 
@@ -34,6 +34,7 @@ while True:
           break
   else:
       time.sleep(0.050)
+      # Starte scan her.
 
 
 
