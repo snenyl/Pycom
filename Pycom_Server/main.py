@@ -65,7 +65,7 @@ char1 = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x
 #     trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
 
 while True:
-    time.sleep(0.01)
+    time.sleep(0.1)
     li = LIS2HH12(py)
     acc_roll = int(li.roll())
     acc_pitch = int(li.pitch())

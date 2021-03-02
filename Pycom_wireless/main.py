@@ -6,6 +6,8 @@ bt.start_scan(-1)
 
 bt.init() # This is important for it to work!
 
+tilt = 0
+
 while True:
   #time.sleep(3) #Every 3 seconds
   adv = bt.get_adv()
@@ -14,17 +16,22 @@ while True:
           services = conn.services()
           for service in services:
               time.sleep(0.050)
-              if type(service.uuid()) == bytes:
-                  print('Reading chars from service = {}'.format(service.uuid()))
-              else:
-                  print('Reading chars from service = %x' % service.uuid())
+            #  if type(service.uuid()) == bytes:
+            #      print('Reading a chars from service = {}'.format(service.uuid()))
+              #else:
+              #print('Reading b chars from service = %x' % service.uuid())
               chars = service.characteristics()
               for char in chars:
                   if (char.properties() & Bluetooth.PROP_READ):
-                      print('char {} value = {}'.format(char.uuid(), char.read()))
-          #conn.disconnect()
+                      print('char {} value = {}'.format(char.uuid(), str(char.read())))
+                      if(char.uuid() == 8224):
+                          tilt = char.read()
+                      else:
+                          break
+          time.sleep(1)
+          conn.disconnect()
+          print("Data: " + str(tilt))
           break
-
   else:
       time.sleep(0.050)
 
