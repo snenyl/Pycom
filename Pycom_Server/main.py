@@ -25,6 +25,7 @@ def connectionCallback(e):
         print("Client disconnected")
 
 
+
 def char1_cb_handler(chr, data):
     events, value = data
     if events & Bluetooth.CHAR_WRITE_EVENT:
@@ -37,6 +38,22 @@ def acc_write_array(duration):
     for x in range(duration):
         add = [x, li.acceleration()]
         T.append(add)
+    pass
+
+def acc_send_array():
+    for x in range(len(T)):
+        a,b=T[x]
+        #print(str(a) + ' ' + str(b))
+        acc_data_string = str(b)
+        x_data = acc_data_string[1:11]
+        y_data = acc_data_string[13:23]
+        z_data = acc_data_string[25:35]
+        print(str(a) + ' x: ' + x_data + ' y: ' + y_data + ' z: ' + z_data)
+        char1.value(a)
+        x_acc_char.value(x_data)
+        y_acc_char.value(y_data)
+        z_acc_char.value(z_data)
+        #x_acc_char.value(b)
     pass
 
 
@@ -59,6 +76,9 @@ Bluetooth().advertise(True)
 srv = Bluetooth().service(uuid=0x3040, isprimary=True, nbr_chars=1, start=True)
 
 char1 = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0xFF0000)
+x_acc_char = srv.characteristic(uuid=0x2021, properties=Bluetooth.PROP_READ, value=0xFF0000)
+y_acc_char = srv.characteristic(uuid=0x2022, properties=Bluetooth.PROP_READ, value=0xFF0000)
+z_acc_char = srv.characteristic(uuid=0x2023, properties=Bluetooth.PROP_READ, value=0xFF0000)
 
                            # Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY
 
@@ -82,12 +102,17 @@ while True:
     # json = ujson.dumps({"h": h, "c": c, "v": apin()})
     T = [] # Reset array
 
+    start_time = time.time()*1000
     acc_write_array(1000)
-    print('Length: ' + str(len(T)))
-    print(T)
+    end_time = time.time()*1000
+    duration_time_ms = (end_time - start_time)
+    print(duration_time_ms)
+    #print('Written ' str(len(T)) + ' lines in ' + str(duration_time))
+    #print(T)
 
     if BLEConnected:
+        acc_send_array()
         #char1.value(0x42)
-        char1.value(T)
+        #char1.value(T)
         #char3.value(acc_pitch)
         #print("Roll: " + str(acc_roll) + "Pitch: " + str(acc_pitch))
