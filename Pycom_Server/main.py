@@ -1,5 +1,6 @@
 from network import Bluetooth
 import time
+from array import *
 # import ujson
 import pycom
 from pysense import Pysense
@@ -32,6 +33,12 @@ def char1_cb_handler(chr, data):
     elif events & Bluetooth.CHAR_READ_EVENT:
         print("Read Request")
 
+def acc_write_array(duration):
+    for x in range(duration):
+        add = [x, int(li.pitch()*1000)]
+        T.append(add)
+    pass
+
 
 # apin = ADC().channel(pin='P16')
 
@@ -42,8 +49,7 @@ py = Pysense()
 # Bluetooth().set_pin(463523)
 
 Bluetooth().init()
-Bluetooth().set_advertisement(
-    name='LoPy', service_uuid=0x3040) # Service in dec
+Bluetooth().set_advertisement(name='LoPy', service_uuid=0x3040) # Service in dec
 
 Bluetooth().callback(trigger=Bluetooth.CLIENT_CONNECTED |
                      Bluetooth.CLIENT_DISCONNECTED, handler=connectionCallback)
@@ -64,14 +70,34 @@ char1 = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x
 # char1_cb = char2.callback(
 #     trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
 
+
+T = []
+
+li = LIS2HH12(py)
+li.set_odr(6)
+
 while True:
-    time.sleep(0.1)
-    li = LIS2HH12(py)
-    acc_roll = int(li.roll())
-    acc_pitch = int(li.pitch())
+    #time.sleep(0.1)
+
+    acc_roll = int(li.roll()*1000)
+    acc_pitch = int(li.pitch()*1000)
     # json = ujson.dumps({"h": h, "c": c, "v": apin()})
+
+    time.sleep(5)
+
+    acc_write_array(50)
+    print(T)
+
+
+    # for x in range(10):
+    #     add = [x, int(li.pitch()*1000)]
+    #     T.append(add)
+    #     print(T)
+    # else:
+    #     print('Completed')
+
     if BLEConnected:
         #char1.value(0x42)
-        char1.value(acc_roll)
+        char1.value(T)
         #char3.value(acc_pitch)
-        print("Roll: " + str(acc_roll) + "Pitch: " + str(acc_pitch))
+        #print("Roll: " + str(acc_roll) + "Pitch: " + str(acc_pitch))

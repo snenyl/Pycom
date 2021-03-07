@@ -14,24 +14,26 @@ while True:
   if adv and bt.resolve_adv_data(adv.data, Bluetooth.ADV_NAME_CMPL) == 'LoPy':
           conn = bt.connect(adv.mac)
           services = conn.services()
-          for service in services:
-              time.sleep(0.050)
-            #  if type(service.uuid()) == bytes:
-            #      print('Reading a chars from service = {}'.format(service.uuid()))
-              #else:
-              #print('Reading b chars from service = %x' % service.uuid())
-              chars = service.characteristics()
-              for char in chars:
-                  if (char.properties() & Bluetooth.PROP_READ):
-                      print('char {} value = {}'.format(char.uuid(), str(char.read())))
-                      if(char.uuid() == 8224):
-                          tilt = char.read()
+          while True:
+              for service in services:
+                  time.sleep(0.050)
+                  #  if type(service.uuid()) == bytes:
+                  #      print('Reading a chars from service = {}'.format(service.uuid()))
+                  #else:
+                  #print('Reading b chars from service = %x' % service.uuid())
+                  chars = service.characteristics()
+                  for char in chars:
+                      if (char.properties() & Bluetooth.PROP_READ):
+                          #print('char {} value = {}'.format(char.uuid(), str(char.read())))
+                          if(char.uuid() == 8224):
+                            tilt = char.read()
                       else:
                           break
-          time.sleep(1)
-          conn.disconnect()
-          print("Data: " + str(tilt))
-          break
+
+              time.sleep(1)
+          #conn.disconnect()
+          print("Data: " + tilt)
+          #break
   else:
       time.sleep(0.050)
       # Starte scan her.
