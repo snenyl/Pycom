@@ -35,7 +35,7 @@ def char1_cb_handler(chr, data):
 
 def acc_write_array(duration):
     for x in range(duration):
-        add = [x, int(li.pitch()*1000)]
+        add = [x, li.acceleration()]
         T.append(add)
     pass
 
@@ -77,24 +77,14 @@ li = LIS2HH12(py)
 li.set_odr(6)
 
 while True:
-    #time.sleep(0.1)
-
-    acc_roll = int(li.roll()*1000)
-    acc_pitch = int(li.pitch()*1000)
+#    acc_roll = int(li.roll()*1000)
+#    acc_pitch = int(li.pitch()*1000)
     # json = ujson.dumps({"h": h, "c": c, "v": apin()})
+    T = [] # Reset array
 
-    time.sleep(5)
-
-    acc_write_array(50)
+    acc_write_array(1000)
+    print('Length: ' + str(len(T)))
     print(T)
-
-
-    # for x in range(10):
-    #     add = [x, int(li.pitch()*1000)]
-    #     T.append(add)
-    #     print(T)
-    # else:
-    #     print('Completed')
 
     if BLEConnected:
         #char1.value(0x42)
