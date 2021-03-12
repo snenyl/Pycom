@@ -6,6 +6,12 @@ bt.start_scan(-1)
 
 bt.init() # This is important for it to work! Put on front fo bt.start?
 
+def acc_recieve_array():
+        #x_acc_char.value(b)
+    pass
+
+
+
 tilt = 0
 
 while True:
@@ -24,15 +30,15 @@ while True:
                   chars = service.characteristics()
                   for char in chars:
                       if (char.properties() & Bluetooth.PROP_READ):
-                          #print('char {} value = {}'.format(char.uuid(), str(char.read())))
-                          if(char.uuid() == 8224):
+                          print('char {} value = {}'.format(char.uuid(), str(char.read())))
+                          if(char.uuid() == 0x2020):
                             tilt = char.read()
                       else:
                           break
 
               time.sleep(1)
           #conn.disconnect()
-          print("Data: " + tilt)
+              print("Data: " + str(tilt))
           #break
   else:
       time.sleep(0.050)

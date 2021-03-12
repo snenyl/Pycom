@@ -92,6 +92,7 @@ class LIS2HH12:
         self.z = struct.unpack('<h', z)
         _mult = self.SCALES[self.full_scale] / ACC_G_DIV
         return (self.x[0] * _mult, self.y[0] * _mult, self.z[0] * _mult)
+        #return(self.x, self.y, self.z)
 
     def roll(self):
         x,y,z = self.acceleration()
