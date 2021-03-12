@@ -57,28 +57,29 @@ def acc_send_array():
         y_data = T[x][1][1]
         z_data = T[x][1][2]
 
-        print("Iteration:", iteration)
-        print("X data:",x_data)
-        print("Y data:",y_data)
-        print("Z data:",z_data)
+        # print("Iteration:", iteration)
+        # print("X data:",x_data)
+        # print("Y data:",y_data)
+        # print("Z data:",z_data)
 
         # x_data_hex = binascii.hexlify(struct.pack('<f', x_data)
+        iteration_data_byte = bytearray(struct.pack("I", iteration))
         x_data_byte = bytearray(struct.pack("f", x_data))
         y_data_byte = bytearray(struct.pack("f", y_data))
         z_data_byte = bytearray(struct.pack("f", x_data))
-        print(x_data_byte, y_data_byte, z_data_byte)
+        print(iteration_data_byte, x_data_byte, y_data_byte, z_data_byte)
         # packed_x_data = binascii.hexlify(x_data_byte)
         # print(packed_x_data)
 
         # print(str(x_data_hex))
 
-        iteration_char.value(iteration)
+        iteration_char.value(iteration_data_byte)
         x_acc_char.value(x_data_byte)
         y_acc_char.value(y_data_byte)
         z_acc_char.value(z_data_byte)
 
         #Convert x_data string to hex and trunktate
-        time.sleep(0.5)
+        time.sleep(0.1)
         #x_acc_char.value(x_data)
         # y_acc_char.value(y_data)
         # z_acc_char.value(z_data)
@@ -104,10 +105,10 @@ Bluetooth().advertise(True)
 
 srv = Bluetooth().service(uuid=0x3040, isprimary=True, nbr_chars=4, start=True)
 
-iteration_char = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0xFFFF) #Total 16bit per char
-x_acc_char = srv.characteristic(uuid=0x2021, properties=Bluetooth.PROP_READ, value=0xFF00) #Total 16bit per char
-y_acc_char = srv.characteristic(uuid=0x2022, properties=Bluetooth.PROP_READ, value=0xFF00) #Total 16bit per char
-z_acc_char = srv.characteristic(uuid=0x2023, properties=Bluetooth.PROP_READ, value=0xFF00) #Total 16bit per char
+iteration_char = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+x_acc_char = srv.characteristic(uuid=0x2021, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+y_acc_char = srv.characteristic(uuid=0x2022, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+z_acc_char = srv.characteristic(uuid=0x2023, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
 
                            # Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY
 

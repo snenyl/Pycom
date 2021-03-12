@@ -1,6 +1,9 @@
 from network import Bluetooth
 import time
 import ubinascii
+import binascii
+import struct
+
 bt = Bluetooth()
 bt.start_scan(-1)
 
@@ -10,9 +13,11 @@ def acc_recieve_array():
         #x_acc_char.value(b)
     pass
 
-
-
 tilt = 0
+i = 0
+T = []
+data_1 = 0
+initialWait = 0
 
 while True:
   #time.sleep(3) #Every 3 seconds
@@ -22,23 +27,76 @@ while True:
           services = conn.services()
           while True:
               for service in services:
-                  time.sleep(0.050)
-                  #  if type(service.uuid()) == bytes:
-                  #      print('Reading a chars from service = {}'.format(service.uuid()))
-                  #else:
-                  #print('Reading b chars from service = %x' % service.uuid())
                   chars = service.characteristics()
                   for char in chars:
-                      if (char.properties() & Bluetooth.PROP_READ):
-                          print('char {} value = {}'.format(char.uuid(), str(char.read())))
-                          if(char.uuid() == 0x2020):
-                            tilt = char.read()
-                      else:
-                          break
+                      # print(char.uuid())
+                      # descriptor = char.read_descriptor(0x2902)
+                      # print(descriptor)
+                      if char.uuid() == 0x2020:
+                          #print("Hello! ", hex(char.uuid()))
+                          if initialWait < 1:
+                              time.sleep(3)
+                              initialWait = 1
+                              print("Initial wait completed")
+                              pass
+                          data_0 = struct.unpack("I", char.read())
 
-              time.sleep(1)
+                          if len(T) < int(data_0[0]):
+                              add = [int(data_0[0]), 1]
+                              T.append(add)
+                              data_1 = data_0
+                              pass
+
+
+                          if int(data_0[0]) > 998:
+                              print(T)
+                              time.sleep(20)
+                              pass
+                          #data_0 = int(binascii.hexlify(char.read()),16)
+                          #print("char:", data_0[0])
+                          # data_0 = int(binascii.uhexlify(char.read()),16)
+                          # if data_0 > data_1:
+                          #     print("r: ", data_0)
+                          #     data_1 = int(binascii.hexlify(char.read()),16)
+                          #     pass
+                          #print("v: ", char.value())
+
+
+                          #add =
+                          #time.sleep(0.3)
+                          #pass
+                      # print("uuid: ", hex(char.uuid()))
+                      # print("char_read: ",char.value())
+
+
+              # for service in services:
+              #     time.sleep(0.050)
+              #     # if type(service.uuid()) == bytes:
+              #     #     print('Reading a chars from service = {}'.format(service.uuid()))
+              #     # else:
+              #     #     print('Reading b chars from service = %x' % service.uuid())
+              #     chars = service.characteristics()
+              #     for char in chars:
+              #         if (char.properties() & Bluetooth.PROP_READ):
+              #             print('char {} value = {}'.format(char.uuid(), str(char.read())))
+              #             if(char.uuid() == 0x2020):
+              #                 iteration = char.read()
+              #                 unpacked_data = ubinascii.unhexlify(iteration)
+              #                 i = i + 1
+              #                 add = []
+              #                 T.append(add)
+              #                 print("Hello:",iteration,"Unpack: ",unpacked_data)
+              #             if(char.uuid() == 0x2021):
+              #                 print("darkness")
+              #
+              #         else:
+              #             break
+              #time.sleep(1)
           #conn.disconnect()
-              print("Data: " + str(tilt))
+              # i = i + 1
+              # add = [iteration,char.uuid()]
+              # T.append(add)
+              # print("Array: " + str(T))
           #break
   else:
       time.sleep(0.050)
