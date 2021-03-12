@@ -66,7 +66,7 @@ def acc_send_array():
         iteration_data_byte = bytearray(struct.pack("I", iteration))
         x_data_byte = bytearray(struct.pack("f", x_data))
         y_data_byte = bytearray(struct.pack("f", y_data))
-        z_data_byte = bytearray(struct.pack("f", x_data))
+        z_data_byte = bytearray(struct.pack("f", z_data))
         print(iteration_data_byte, x_data_byte, y_data_byte, z_data_byte)
         # packed_x_data = binascii.hexlify(x_data_byte)
         # print(packed_x_data)
@@ -79,7 +79,7 @@ def acc_send_array():
         z_acc_char.value(z_data_byte)
 
         #Convert x_data string to hex and trunktate
-        time.sleep(0.1)
+        time.sleep(0.15)
         #x_acc_char.value(x_data)
         # y_acc_char.value(y_data)
         # z_acc_char.value(z_data)
@@ -165,7 +165,6 @@ while True:
         # x_acc_char.value(0x34F3BD43)
         # y_acc_char.value(0x36F3CE21)
         # z_acc_char.value(0x38F3AD68)
-
         acc_send_array()
         #a = 0xFFFF
         #char1.value(a)

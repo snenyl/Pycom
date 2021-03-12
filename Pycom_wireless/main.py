@@ -34,24 +34,28 @@ while True:
                       # print(descriptor)
                       if char.uuid() == 0x2020:
                           #print("Hello! ", hex(char.uuid()))
-                          if initialWait < 1:
-                              time.sleep(3)
-                              initialWait = 1
-                              print("Initial wait completed")
+                          if len(char.read()) < 3:
+                              time.sleep(0.001)
+                              #print("Initial wait completed")
                               pass
-                          data_0 = struct.unpack("I", char.read())
-
-                          if len(T) < int(data_0[0]):
-                              add = [int(data_0[0]), 1]
-                              T.append(add)
-                              data_1 = data_0
-                              pass
+                          else:
+                              data_0 = struct.unpack("I", char.read())
+                              x_data = struct.unpack("f", char.read())
+                              y_data = struct.unpack("f", char.read())
+                              z_data = struct.unpack("f", char.read())
 
 
-                          if int(data_0[0]) > 998:
-                              print(T)
-                              time.sleep(20)
-                              pass
+                              if len(T) < int(data_0[0]):
+                                  add = [int(data_0[0]), x_data, y_data, z_data]
+                                  T.append(add)
+                                  data_1 = data_0
+                                  pass
+
+
+                              if int(data_0[0]) > 50:
+                                  print(T)
+                                  time.sleep(20)
+                                  pass
                           #data_0 = int(binascii.hexlify(char.read()),16)
                           #print("char:", data_0[0])
                           # data_0 = int(binascii.uhexlify(char.read()),16)
