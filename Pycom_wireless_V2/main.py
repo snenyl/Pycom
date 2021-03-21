@@ -5,7 +5,7 @@ bt.start_scan(-1)
 
 while True:
   adv = bt.get_adv()
-  if adv and bt.resolve_adv_data(adv.data, Bluetooth.ADV_NAME_CMPL) == 'Heart Rate':
+  if adv and bt.resolve_adv_data(adv.data, Bluetooth.ADV_NAME_CMPL) == 'LoPy':
       try:
           conn = bt.connect(adv.mac)
           services = conn.services()

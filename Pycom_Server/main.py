@@ -29,6 +29,14 @@ def connectionCallback(e):
     elif events & Bluetooth.CLIENT_DISCONNECTED:
         BLEConnected = False
         print("Client disconnected")
+        return(0)
+
+def BLEDisconnect():
+    adv = Bluetooth().get_adv()
+    conn = Bluetooth().connect(adv.mac)
+    conn.disconnect()
+    return(0)
+
 
 
 
@@ -36,7 +44,6 @@ def char1_cb_handler(chr, data):
     events, value = data
     if events & Bluetooth.CHAR_WRITE_EVENT:
         print("Write request")
-        pycom.rgbled(int.from_bytes(bytearray(value), 'big'))
     elif events & Bluetooth.CHAR_READ_EVENT:
         print("Read Request")
 
@@ -84,6 +91,10 @@ def acc_send_array():
         # y_acc_char.value(y_data)
         # z_acc_char.value(z_data)
         #x_acc_char.value(b)
+        if x >= len(T)-1:
+            print("Sent everything, waiting for disconnect...")
+            BLEDisconnect()
+            return(0)
     pass
 
 
@@ -105,10 +116,10 @@ Bluetooth().advertise(True)
 
 srv = Bluetooth().service(uuid=0x3040, isprimary=True, nbr_chars=4, start=True)
 
-iteration_char = srv.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
-x_acc_char = srv.characteristic(uuid=0x2021, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
-y_acc_char = srv.characteristic(uuid=0x2022, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
-z_acc_char = srv.characteristic(uuid=0x2023, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+iteration_char = srv.characteristic(uuid=0x14, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+x_acc_char = srv.characteristic(uuid=0x15, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+y_acc_char = srv.characteristic(uuid=0x16, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
+z_acc_char = srv.characteristic(uuid=0x17, properties=Bluetooth.PROP_READ, value=0x00000000) #Total 16bit per char
 
                            # Bluetooth.PROP_BROADCAST | Bluetooth.PROP_NOTIFY
 
@@ -147,13 +158,14 @@ li.set_full_scale(0)
 
 
 while True:
+
 #    acc_roll = int(li.roll()*1000)
 #    acc_pitch = int(li.pitch()*1000)
     T = [] # Reset array
 
 
     start_time = time.time()*1000
-    acc_write_array(200)
+    acc_write_array(20)
     end_time = time.time()*1000
     duration_time_ms = (end_time - start_time)
     print(duration_time_ms)
