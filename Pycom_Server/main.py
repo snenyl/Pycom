@@ -153,7 +153,7 @@ while True:
 
 
     start_time = time.time()*1000
-    acc_write_array(1000)
+    acc_write_array(200)
     end_time = time.time()*1000
     duration_time_ms = (end_time - start_time)
     print(duration_time_ms)
