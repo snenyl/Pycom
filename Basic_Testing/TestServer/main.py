@@ -1,36 +1,38 @@
 from network import Bluetooth
 import ubinascii
 import time
+import machine
 
-def goToSleepfor(sleepvalue):
-    print("Going to sleep for ", str(sleepvalue) ," seconds")
-    time.sleep(sleepvalue)
-    pass
+
+BLEConnected = False
 
 
 def writeToServer():
+    bt = Bluetooth()
     adv = bluetooth.get_adv()
     print("Writing to client with MAC: {}".format(ubinascii.hexlify(adv.mac)))
+    global connectedMAC
+    connectedMAC = adv.mac
+    print(connectedMAC)
+    # return(0)
+    pass
 
-    print(adv)
-    # services = connection.services()
-    # print(services)
-    # for service in services:
-    #     print(service.uuid())
+def goToSleepfor(sleepvalue):
+    sleepvalue_ms = sleepvalue*1000
+    print("Going to sleep for", str(sleepvalue) ,"seconds")
+    machine.deepsleep(sleepvalue_ms)
+    pass
 
-    # bt = Bluetooth()
-    # conn = bt.connect(adv.mac)
-    # services = conn.services()
-    # print(services)
-    # bluetooth.disconnect_client()#adv.mac
-    return(0)
 
 def conn_cb (bt_o):
     events = bt_o.events()
+    global BLEConnected
     if  events & Bluetooth.CLIENT_CONNECTED:
+        BLEConnected = True
         print("Client connected")
         writeToServer()
     elif events & Bluetooth.CLIENT_DISCONNECTED:
+        BLEConnected = False
         print("Client disconnected")
         goToSleepfor(3)
         return(0)
@@ -62,17 +64,26 @@ bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
 bluetooth.callback(trigger=Bluetooth.CLIENT_CONNECTED | Bluetooth.CLIENT_DISCONNECTED, handler=conn_cb)
 bluetooth.advertise(True)
 
-srv1 = bluetooth.service(uuid=b'1234567890123456', isprimary=True)
-chr1 = srv1.characteristic(uuid=b'ab34567890123456', value=5)
-char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT | Bluetooth.CHAR_READ_EVENT, handler=char1_cb_handler)
+srv1 = bluetooth.service(uuid=0x2020, nbr_chars=1 ,isprimary=True)
+#
+chr1 = srv1.characteristic(uuid=0x2020, properties=Bluetooth.PROP_WRITE, value=0x837233)
+char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
 
-srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
-chr2 = srv2.characteristic(uuid=4567, value=0x1234)
-char2_cb = chr2.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char2_cb_handler)
-chr21 = srv2.characteristic(uuid=4568, value=0x4321)
-char21_cb = chr2.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char21_cb_handler)
+# srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
+# chr2 = srv2.characteristic(uuid=4567, value=0x1234)
+# char2_cb = chr2.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char2_cb_handler)
+# chr21 = srv2.characteristic(uuid=4568, value=0x4321)
+# char21_cb = chr2.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char21_cb_handler)
 
 
 
 while True:
-    pass
+    if BLEConnected:
+        print("hello!")
+        # adv = bluetooth.get_adv()
+        #
+        # print(conn)
+        time.sleep(1)
+
+    else:
+        time.sleep(0.1)
