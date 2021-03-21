@@ -2,7 +2,7 @@ from network import Bluetooth
 import ubinascii
 import time
 import machine
-
+import struct
 
 BLEConnected = False
 
@@ -66,7 +66,7 @@ bluetooth.advertise(True)
 
 srv1 = bluetooth.service(uuid=0x2020, nbr_chars=1 ,isprimary=True)
 #
-chr1 = srv1.characteristic(uuid=0x2020, properties=Bluetooth.PROP_WRITE, value=0x837233)
+chr1 = srv1.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x837233)
 char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
 
 # srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
@@ -75,13 +75,18 @@ char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_ha
 # chr21 = srv2.characteristic(uuid=4568, value=0x4321)
 # char21_cb = chr2.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char21_cb_handler)
 
+# dataArray = [4, 0.384736286, 0.764539453, -0.738283483]
+# dataArray_byte = bytearray(struct.pack("q", )))
 
+#Max char size 0xFFFFFFFF Not correnct
 
 while True:
     if BLEConnected:
         print("hello!")
+        print(dataArray)
+        print(dataArray_byte)
         # adv = bluetooth.get_adv()
-        #
+        chr1.value(dataArray_byte)
         # print(conn)
         time.sleep(1)
 
