@@ -2,16 +2,26 @@ from network import Bluetooth
 import ubinascii
 import time
 
+def goToSleepfor(sleepvalue):
+    print("Going to sleep for ", str(sleepvalue) ," seconds")
+    time.sleep(sleepvalue)
+    pass
+
+
 def writeToServer():
-    print("Writing to client")
     adv = bluetooth.get_adv()
+    print("Writing to client with MAC: {}".format(ubinascii.hexlify(adv.mac)))
+
     print(adv)
+    # services = connection.services()
+    # print(services)
+    # for service in services:
+    #     print(service.uuid())
+
     # bt = Bluetooth()
     # conn = bt.connect(adv.mac)
     # services = conn.services()
     # print(services)
-    time.sleep(3)
-    print(str(ubinascii.hexlify(adv.mac)))
     # bluetooth.disconnect_client()#adv.mac
     return(0)
 
@@ -22,6 +32,8 @@ def conn_cb (bt_o):
         writeToServer()
     elif events & Bluetooth.CLIENT_DISCONNECTED:
         print("Client disconnected")
+        goToSleepfor(3)
+        return(0)
 
 def char1_cb_handler(chr, data):
 

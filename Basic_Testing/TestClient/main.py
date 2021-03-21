@@ -37,13 +37,13 @@ def char1_cb_handler(chr, data):
 #         print('Read request on char 21')
 #
 #
-# # bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
+bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
 bluetooth.callback(trigger=Bluetooth.CLIENT_CONNECTED | Bluetooth.CLIENT_DISCONNECTED, handler=conn_cb)
-# # bluetooth.advertise(True)
+bluetooth.advertise(False)
 #
-# srv1 = bluetooth.service(uuid=b'1234567890123456', isprimary=True)
-# chr1 = srv1.characteristic(uuid=b'ab34567890123456', value=5)
-# char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT | Bluetooth.CHAR_READ_EVENT, handler=char1_cb_handler)
+srv1 = bluetooth.service(uuid=b'1234567890123456', isprimary=False)
+chr1 = srv1.characteristic(uuid=b'ab34567890123456', value=5)
+char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
 #
 # srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
 # chr2 = srv2.characteristic(uuid=4567, value=0x1234)
