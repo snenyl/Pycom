@@ -19,8 +19,10 @@ while True:
               for char in chars:
                   if (char.properties() & Bluetooth.PROP_READ):
                       print('char {} value = {}'.format(char.uuid(), char.read()))
+          time.sleep(4)
           conn.disconnect()
-          break
+          print("Disconnected from server")
+          #break
       except:
           print("Error while connecting or reading from the BLE device")
           break
