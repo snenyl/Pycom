@@ -1,10 +1,20 @@
 from network import Bluetooth
+from network import WLAN
 import ubinascii
 import time
 import machine
 import struct
 
 BLEConnected = False
+
+def PrivateWlanConfiguration():
+    wlan = WLAN(mode=WLAN.STA)
+    wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
+    while not wlan.isconnected():
+        machine.idle()
+    print("WiFi connected succesfully")
+    print(wlan.ifconfig())
+    pass
 
 """
 0, 0.384736286, 0.764539453, -0.738283483
@@ -90,6 +100,8 @@ char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_ha
 # dataArray_byte = bytearray(struct.pack("q", )))
 
 #Max char size 0xFFFFFFFF Not correnct
+
+PrivateWlanConfiguration() # Wlan Network configuration
 
 while True:
     if BLEConnected:
