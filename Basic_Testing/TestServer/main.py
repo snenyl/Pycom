@@ -39,12 +39,14 @@ MQTTestRun = True
 def mainMQTT(server="broker.hivemq.com"):
     c = MQTTClient("umqtt_client", server)
     c.connect()
+
     PublishThis = [0,4,6]
+    for x in range(0, len(AccData)):
+        PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("f", AccData[x][1])) + bytearray(struct.pack("f", AccData[x][2])) + bytearray(struct.pack("f", AccData[x][3]))
+        print(PublishThis_ba)
+        c.publish(b"IKT520_LAB1", PublishThis_ba)
+        pass
 
-    PublishThis_ba = bytearray(struct.pack("b",0)) + bytearray(struct.pack("f",0.83234235))
-    print(PublishThis_ba)
-
-    c.publish(b"IKT520_LAB1", PublishThis_ba)
     c.disconnect()
 
 def MQTTloop():
