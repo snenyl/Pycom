@@ -6,6 +6,17 @@ import struct
 
 BLEConnected = False
 
+"""
+0, 0.384736286, 0.764539453, -0.738283483
+1, 0.335393275, 0.787328572, -1.059825923
+2, 0.387439833, 0.783275892, -1.032749873
+3, 0.394380345, 0.729525939, -1.132498242
+4, 0.387325897, 0.792395934, -1.027387233
+"""
+
+#No need to send all of the data the sensor is 12bit; divide by 2^(-1)g result in smallest acceleration of 0.00048
+AccData = [[0, 0.384736286, 0.764539453, -0.738283483],[1, 0.335393275, 0.787328572, -1.059825923],[2, 0.387439833, 0.783275892, -1.032749873],[3, 0.394380345, 0.729525939, -1.132498242],[4, 0.387325897, 0.792395934, -1.027387233]]
+
 
 def writeToServer():
     bt = Bluetooth()
@@ -15,7 +26,7 @@ def writeToServer():
     connectedMAC = adv.mac
     print(connectedMAC)
     # return(0)
-    pass
+    pass2, 0.387439833, 0.783275892, -1.032749873
 
 def goToSleepfor(sleepvalue):
     sleepvalue_ms = sleepvalue*1000
