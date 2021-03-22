@@ -1,5 +1,6 @@
 from network import Bluetooth
 from network import WLAN
+from umqtt.simple import MQTTClient
 import ubinascii
 import time
 import machine
