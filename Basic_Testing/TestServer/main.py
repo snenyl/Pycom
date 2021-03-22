@@ -1,6 +1,5 @@
 from network import Bluetooth
 from network import WLAN
-from mqtt import MQTTClient
 import ubinascii
 import time
 import machine
@@ -29,22 +28,16 @@ def PrivateWlanConfiguration():
 AccData = [[0, 0.384736286, 0.764539453, -0.738283483],[1, 0.335393275, 0.787328572, -1.059825923],[2, 0.387439833, 0.783275892, -1.032749873],[3, 0.394380345, 0.729525939, -1.132498242],[4, 0.387325897, 0.792395934, -1.027387233]]
 
 # MQTT
-def sub_cb(topic, msg):
-   print(msg)
 
 MQTTestRun = True
 
-# client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883)
-client = MQTTClient("TestDeviceGPy", "broker.hivemq.com", user="", password="" port=1883)
-
-client.set_callback(sub_cb)
-client.connect()
-client.subscribe(topic="IKT520_LAB1")
+# client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883) IKT520_LAB1
 
 
 def MQTTloop():
     while MQTTestRun:
         print("hello")
+        time.sleep(2)
 
     pass
 
