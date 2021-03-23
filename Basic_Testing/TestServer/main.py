@@ -33,8 +33,6 @@ def sub_cb(topic, msg):
     print((topic, msg))
 
 
-MQTTestRun = True
-
 # client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883) IKT520_LAB1
 def mainMQTT(server="broker.hivemq.com"):
     c = MQTTClient("umqtt_client", server)
@@ -49,13 +47,6 @@ def mainMQTT(server="broker.hivemq.com"):
 
     c.disconnect()
 
-def MQTTloop():
-    while MQTTestRun:
-        print("hello")
-        mainMQTT()
-        time.sleep(2)
-
-    pass
 
 def writeToServer():
     bt = Bluetooth()
@@ -131,7 +122,7 @@ char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_ha
 #Max char size 0xFFFFFFFF Not correnct
 
 PrivateWlanConfiguration() # Wlan Network configuration
-MQTTloop()
+mainMQTT()
 
 while True:
     if BLEConnected:
