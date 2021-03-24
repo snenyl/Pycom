@@ -19,6 +19,9 @@ import struct
 bluetooth = Bluetooth()
 BLEConnected = False
 
+def backToStart():
+    return(0)
+
 def PrivateWlanConfiguration():
     wlan = WLAN(mode=WLAN.STA)
     wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
@@ -145,9 +148,15 @@ while True:
                     print('Reading chars from service = %x' % service.uuid())
                 chars = service.characteristics()
                 for char in chars:
-                    if (char.properties() & Bluetooth.PROP_READ):
-                         print('char {} value = {}'.format(char.uuid(), char.read()))
-                         continue
+                      if (char.properties() & Bluetooth.PROP_READ):
+                          print('char {} value = {}'.format(char.uuid(), str(char.read())))
+                          continue
+                          # if(char.uuid() == 0x2020):
+                          #   print("tilt: " + char.read())
+                          #
+                      else:
+                          continue
+
             time.sleep(4)
             conn.disconnect()
             print("Disconnected from server")

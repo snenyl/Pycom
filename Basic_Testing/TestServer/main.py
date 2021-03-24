@@ -55,11 +55,11 @@ def conn_cb (bt_o):
     if  events & Bluetooth.CLIENT_CONNECTED:
         BLEConnected = True
         print("Client connected")
-        writeToServer()
+        #writeToServer()
     elif events & Bluetooth.CLIENT_DISCONNECTED:
         BLEConnected = False
         print("Client disconnected")
-        goToSleepfor(3)
+        goToSleepfor(10)
         return(0)
 
 def char1_cb_handler(chr, data):
