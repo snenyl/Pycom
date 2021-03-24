@@ -1,9 +1,75 @@
+"""
+This is the client side (Gateway) which read the data from the server node and
+send it to the NodeRED Server though MQTT.
+
+The client read the data off the server by using notify.
+
+"""
+
+
 from network import Bluetooth
 import ubinascii
 import time
+from LIS2HH12 import LIS2HH12
+from umqtt.simple2 import MQTTClient
+from network import WLAN
+import machine
+import struct
 
 bluetooth = Bluetooth()
 BLEConnected = False
+
+def PrivateWlanConfiguration():
+    wlan = WLAN(mode=WLAN.STA)
+    wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
+    while not wlan.isconnected():
+        machine.idle()
+    print("WiFi connected succesfully")
+    print(wlan.ifconfig())
+    pass
+
+AccData = [[0, 0.384736286, 0.764539453, -0.738283483],
+           [1, 0.335393275, 0.787328572, -1.059825923],
+           [2, 0.387439833, 0.783275892, -1.032749873],
+           [3, 0.394380345, 0.729525939, -1.132498242],
+           [4, 0.387325897, 0.792395934, -1.027387233]]
+
+def acc_write_array(duration): #Interrupt pin.
+    for x in range(duration):
+        add = [x, li.acceleration()]
+        T.append(add)
+    pass
+
+# MQTT
+def sub_cb(topic, msg):
+    print((topic, msg))
+
+
+# client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883) IKT520_LAB1
+def mainMQTT(server="broker.hivemq.com"):
+    c = MQTTClient("umqtt_client", server)
+    c.connect()
+
+    PublishThis = [0,4,6]
+    for x in range(0, len(AccData)):
+        PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("f", AccData[x][1])) + bytearray(struct.pack("f", AccData[x][2])) + bytearray(struct.pack("f", AccData[x][3]))
+        print(PublishThis_ba)
+        c.publish(b"IKT520_LAB1", PublishThis_ba)
+        pass
+
+    c.disconnect()
+
+
+
+
+
+
+
+
+
+
+
+
 
 def conn_cb (bt_o):
     events = bt_o.events()
@@ -63,6 +129,8 @@ bt = Bluetooth()
 bluetooth.start_scan(-1)
 adv = None
 
+PrivateWlanConfiguration() # Wlan Network configuration
+# mainMQTT()
 
 adv = None
 while True:

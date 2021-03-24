@@ -1,21 +1,20 @@
+"""
+This is the server side which read the data from the IMU and send it to the
+Gateway.
+
+
+
+"""
+
+
+
 from network import Bluetooth
-from network import WLAN
-from umqtt.simple2 import MQTTClient
 import ubinascii
 import time
 import machine
 import struct
 
 BLEConnected = False
-
-def PrivateWlanConfiguration():
-    wlan = WLAN(mode=WLAN.STA)
-    wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
-    while not wlan.isconnected():
-        machine.idle()
-    print("WiFi connected succesfully")
-    print(wlan.ifconfig())
-    pass
 
 """
 0, 0.384736286, 0.764539453, -0.738283483
@@ -32,25 +31,6 @@ AccData = [[0, 0.384736286, 0.764539453, -0.738283483],
            [3, 0.394380345, 0.729525939, -1.132498242],
            [4, 0.387325897, 0.792395934, -1.027387233]]
 
-# MQTT
-def sub_cb(topic, msg):
-    print((topic, msg))
-
-
-# client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883) IKT520_LAB1
-def mainMQTT(server="broker.hivemq.com"):
-    c = MQTTClient("umqtt_client", server)
-    c.connect()
-
-    PublishThis = [0,4,6]
-    for x in range(0, len(AccData)):
-        PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("f", AccData[x][1])) + bytearray(struct.pack("f", AccData[x][2])) + bytearray(struct.pack("f", AccData[x][3]))
-        print(PublishThis_ba)
-        c.publish(b"IKT520_LAB1", PublishThis_ba)
-        pass
-
-    c.disconnect()
-
 
 def writeToServer():
     bt = Bluetooth()
@@ -60,7 +40,7 @@ def writeToServer():
     connectedMAC = adv.mac
     print(connectedMAC)
     # return(0)
-    pass2, 0.387439833, 0.783275892, -1.032749873
+    pass
 
 def goToSleepfor(sleepvalue):
     sleepvalue_ms = sleepvalue*1000
@@ -125,16 +105,13 @@ char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_ha
 
 #Max char size 0xFFFFFFFF Not correnct
 
-PrivateWlanConfiguration() # Wlan Network configuration
-mainMQTT()
-
 while True:
     if BLEConnected:
         print("hello!")
-        print(dataArray)
-        print(dataArray_byte)
-        # adv = bluetooth.get_adv()
-        chr1.value(dataArray_byte)
+        # print(dataArray)
+        # print(dataArray_byte)
+        # # adv = bluetooth.get_adv()
+        # chr1.value(dataArray_byte)
         # print(conn)
         time.sleep(1)
 
