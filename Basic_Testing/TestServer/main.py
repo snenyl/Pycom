@@ -1,10 +1,55 @@
 from network import Bluetooth
+from network import WLAN
+from umqtt.simple2 import MQTTClient
 import ubinascii
 import time
 import machine
 import struct
 
 BLEConnected = False
+
+def PrivateWlanConfiguration():
+    wlan = WLAN(mode=WLAN.STA)
+    wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
+    while not wlan.isconnected():
+        machine.idle()
+    print("WiFi connected succesfully")
+    print(wlan.ifconfig())
+    pass
+
+"""
+0, 0.384736286, 0.764539453, -0.738283483
+1, 0.335393275, 0.787328572, -1.059825923
+2, 0.387439833, 0.783275892, -1.032749873
+3, 0.394380345, 0.729525939, -1.132498242
+4, 0.387325897, 0.792395934, -1.027387233
+"""
+
+#No need to send all of the data the sensor is 12bit; divide by 2^(-1)g result in smallest acceleration of 0.00048
+AccData = [[0, 0.384736286, 0.764539453, -0.738283483],
+           [1, 0.335393275, 0.787328572, -1.059825923],
+           [2, 0.387439833, 0.783275892, -1.032749873],
+           [3, 0.394380345, 0.729525939, -1.132498242],
+           [4, 0.387325897, 0.792395934, -1.027387233]]
+
+# MQTT
+def sub_cb(topic, msg):
+    print((topic, msg))
+
+
+# client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883) IKT520_LAB1
+def mainMQTT(server="broker.hivemq.com"):
+    c = MQTTClient("umqtt_client", server)
+    c.connect()
+
+    PublishThis = [0,4,6]
+    for x in range(0, len(AccData)):
+        PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("f", AccData[x][1])) + bytearray(struct.pack("f", AccData[x][2])) + bytearray(struct.pack("f", AccData[x][3]))
+        print(PublishThis_ba)
+        c.publish(b"IKT520_LAB1", PublishThis_ba)
+        pass
+
+    c.disconnect()
 
 
 def writeToServer():
@@ -15,7 +60,7 @@ def writeToServer():
     connectedMAC = adv.mac
     print(connectedMAC)
     # return(0)
-    pass
+    pass2, 0.387439833, 0.783275892, -1.032749873
 
 def goToSleepfor(sleepvalue):
     sleepvalue_ms = sleepvalue*1000
@@ -79,6 +124,9 @@ char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_ha
 # dataArray_byte = bytearray(struct.pack("q", )))
 
 #Max char size 0xFFFFFFFF Not correnct
+
+PrivateWlanConfiguration() # Wlan Network configuration
+mainMQTT()
 
 while True:
     if BLEConnected:
