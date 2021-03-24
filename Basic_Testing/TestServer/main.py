@@ -109,13 +109,18 @@ def char1_cb_handler(chr, data):
         y_data = T[readArrayIndex][1][1]
         z_data = T[readArrayIndex][1][2]
 
+        iteration_ba = bytearray(struct.pack("b", iteration))
+        x_data_ba = bytearray(struct.pack("f", x_data))
+        y_data_ba = bytearray(struct.pack("f", y_data))
+        z_data_ba = bytearray(struct.pack("f", z_data))
+
         print(iteration, x_data, y_data, z_data)
 
-        chr1.value(iteration)
-
-        if readArrayIndex > 199:
-            print("Array Empty")
-            pass
+        chr1.value(iteration_ba)
+        chr_x.value(x_data_ba)
+        chr_y.value(y_data_ba)
+        chr_z.value(z_data_ba)
+        # chr_x.value(bytearray(struct.pack("f", x_data)))
 
 
 
@@ -137,10 +142,15 @@ bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
 bluetooth.callback(trigger=Bluetooth.CLIENT_CONNECTED | Bluetooth.CLIENT_DISCONNECTED, handler=conn_cb)
 bluetooth.advertise(True)
 
-srv1 = bluetooth.service(uuid=0x2020, nbr_chars=1 ,isprimary=True)
+srv1 = bluetooth.service(uuid=0x2020, nbr_chars=4 ,isprimary=True)
 #
-chr1 = srv1.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x837233)
+chr1 = srv1.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x000000)
 char1_cb = chr1.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char1_cb_handler)
+chr_x = srv1.characteristic(uuid=0x2021, properties=Bluetooth.PROP_READ, value=0x000000)
+chr_y = srv1.characteristic(uuid=0x2022, properties=Bluetooth.PROP_READ, value=0x000000)
+chr_z = srv1.characteristic(uuid=0x2023, properties=Bluetooth.PROP_READ, value=0x000000)
+
+# char1_cb = chr_x.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=none)
 
 # srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
 # chr2 = srv2.characteristic(uuid=4567, value=0x1234)

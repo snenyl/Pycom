@@ -19,9 +19,6 @@ import struct
 bluetooth = Bluetooth()
 BLEConnected = False
 
-def backToStart():
-    return(0)
-
 def PrivateWlanConfiguration():
     wlan = WLAN(mode=WLAN.STA)
     wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
@@ -50,13 +47,13 @@ def sub_cb(topic, msg):
 
 # client = MQTTClient("TestDeviceGPy", "broker.hivemq.com",user="your_username", password="your_api_key", port=1883) IKT520_LAB1
 def mainMQTT(server="broker.hivemq.com"):
+    print("Connecting to MQTT server")
     c = MQTTClient("umqtt_client", server)
     c.connect()
-
-    PublishThis = [0,4,6]
     for x in range(0, len(AccData)):
+        print("Publishing")
         PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("f", AccData[x][1])) + bytearray(struct.pack("f", AccData[x][2])) + bytearray(struct.pack("f", AccData[x][3]))
-        print(PublishThis_ba)
+        # PublishThis_ba = T[x]
         c.publish(b"IKT520_LAB1", PublishThis_ba)
         pass
 
@@ -145,17 +142,22 @@ while True:
                   print('Reading chars from service = %x' % service.uuid())
               chars = service.characteristics()
               for char in chars:
-                  if (char.properties() & Bluetooth.PROP_READ):
+                  # print(char.properties())
+                  if (char.properties() & Bluetooth.PROP_READ): #
                       print('char {} value = {}'.format(char.uuid(), char.read()))
-                      if char.uuid() == 8224:
-                          print("hello!", char.read())
-                          for ii in range(198):
-                              dataOut = char.read()
-                              print("Hi!", ii, dataOut)
-                              # T[ii] = char.read()
-                              pass
-                          pass
-            # conn.disconnect()
+                      # for ii in range(200):
+                      #     if char.uuid() == 0x2020:
+                      #         # global T
+                      #         T[ii] = char.read()
+                      #         dataOut = char.read()
+                      #         print("Hi! ", dataOut)
+                      #     pass
+                      #     if char.uuid() == 8225:
+                      #         dataOut_x = char.read()
+                      #         print("You ", dataOut)
+                      #     pass
+            conn.disconnect()
+            mainMQTT()
             break
         except:
             pass
