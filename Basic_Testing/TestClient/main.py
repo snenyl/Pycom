@@ -59,18 +59,6 @@ def mainMQTT(server="broker.hivemq.com"):
 
     c.disconnect()
 
-
-
-
-
-
-
-
-
-
-
-
-
 def conn_cb (bt_o):
     events = bt_o.events()
     global BLEConnected
@@ -84,12 +72,20 @@ def conn_cb (bt_o):
         bluetooth.start_scan(-1)
         return(0)
 
-def char1_cb_handler(chr, data):
+def conn_notify_cb (bt_o):
+    events = bt_o.events()
+    global BLEConnected
+    if  events & Bluetooth.CHAR_NOTIFY_EVENT:
+        BLEConnected = True
+        print("Client Notified")
+        return(0)
 
+
+def char1_cb_handler(chr, data):
     # The data is a tuple containing the triggering event and the value if the event is a WRITE event.
     # We recommend fetching the event and value from the input parameter, and not via characteristic.event() and characteristic.value()
     events, value = data
-    if  events & Bluetooth.CHAR_WRITE_EVENT:
+    if  events & Bluetooth.CHAR_READ_EVENT:
         print("Write request with value = {}".format(value))
     else:
         print('Read request on char 1')
@@ -109,11 +105,13 @@ def char1_cb_handler(chr, data):
 #
 bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
 bluetooth.callback(trigger=Bluetooth.CLIENT_CONNECTED | Bluetooth.CLIENT_DISCONNECTED, handler=conn_cb)
+bluetooth.callback(trigger=Bluetooth.CHAR_NOTIFY_EVENT, handler=conn_notify_cb)
+
 bluetooth.advertise(False)
 #
 srv1 = bluetooth.service(uuid=b'1234567890123456',isprimary=True)
 chr1 = srv1.characteristic(uuid=b'ab34567890123456',properties=Bluetooth.PROP_READ, value=0)
-char1_cb = chr1.callback(trigger=Bluetooth.CHAR_WRITE_EVENT, handler=char1_cb_handler)
+char1_cb = chr1.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char1_cb_handler)
 #
 # srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
 # chr2 = srv2.characteristic(uuid=4567, value=0x1234)
@@ -147,8 +145,14 @@ while True:
                     print('Reading chars from service = %x' % service.uuid())
                 chars = service.characteristics()
                 for char in chars:
-                    if (char.properties() & Bluetooth.PROP_WRITE):
-                         print('char {} value = {}'.format(char.uuid(), char.write(b'x0f')))
+                    if (char.properties() & Bluetooth.PROP_READ):
+                         print('char {} value = {}'.format(char.uuid(), char.read()))
+                         continue
+            time.sleep(4)
+            conn.disconnect()
+            print("Disconnected from server")
+            machine.reset()
+            continue
         except:
             # start scanning again
             bluetooth.start_scan(-1)
@@ -156,3 +160,4 @@ while True:
         #break
     if BLEConnected:
         time.sleep(1)
+        print("BLEConnected")

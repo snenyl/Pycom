@@ -117,3 +117,4 @@ while True:
 
     else:
         time.sleep(0.1)
+        #bluetooth.advertise(True)
