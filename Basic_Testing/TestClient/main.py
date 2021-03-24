@@ -75,14 +75,9 @@ def conn_cb (bt_o):
         bluetooth.start_scan(-1)
         return(0)
 
-def conn_notify_cb (bt_o):
-    events = bt_o.events()
-    global BLEConnected
-    if  events & Bluetooth.CHAR_NOTIFY_EVENT:
-        BLEConnected = True
-        print("Client Notified")
-        return(0)
-
+def char_notify_callback(char):
+    char_value = (char.value())
+    print("Got new char: {} value: {}".format(char.uuid(), char_value))
 
 def char1_cb_handler(chr, data):
     # The data is a tuple containing the triggering event and the value if the event is a WRITE event.
@@ -108,13 +103,15 @@ def char1_cb_handler(chr, data):
 #
 bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
 bluetooth.callback(trigger=Bluetooth.CLIENT_CONNECTED | Bluetooth.CLIENT_DISCONNECTED, handler=conn_cb)
-bluetooth.callback(trigger=Bluetooth.CHAR_NOTIFY_EVENT, handler=conn_notify_cb)
+# bluetooth.callback(trigger=Bluetooth.CHAR_NOTIFY_EVENT, handler=conn_notify_cb)
 
 bluetooth.advertise(False)
 #
 srv1 = bluetooth.service(uuid=b'1234567890123456',isprimary=True)
 chr1 = srv1.characteristic(uuid=b'ab34567890123456',properties=Bluetooth.PROP_READ, value=0)
 char1_cb = chr1.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char1_cb_handler)
+
+
 #
 # srv2 = bluetooth.service(uuid=1234, nbr_chars=2 ,isprimary=True)
 # chr2 = srv2.characteristic(uuid=4567, value=0x1234)
@@ -141,32 +138,39 @@ while True:
             conn = bluetooth.connect(adv.mac)
             services = conn.services()
             for service in services:
-                time.sleep(0.050)
-                if type(service.uuid()) == bytes:
-                    print('Reading chars from service = {}'.format(service.uuid()))
-                else:
-                    print('Reading chars from service = %x' % service.uuid())
-                chars = service.characteristics()
-                for char in chars:
-                      if (char.properties() & Bluetooth.PROP_READ):
-                          print('char {} value = {}'.format(char.uuid(), str(char.read())))
-                          continue
-                          # if(char.uuid() == 0x2020):
-                          #   print("tilt: " + char.read())
-                          #
-                      else:
-                          continue
-
-            time.sleep(4)
-            conn.disconnect()
-            print("Disconnected from server")
-            machine.reset()
-            continue
+              time.sleep(0.050)
+              if type(service.uuid()) == bytes:
+                  print('Reading chars from service = {}'.format(service.uuid()))
+              else:
+                  print('Reading chars from service = %x' % service.uuid())
+              chars = service.characteristics()
+              for char in chars:
+                  if (char.properties() & Bluetooth.PROP_READ):
+                      print('char {} value = {}'.format(char.uuid(), char.read()))
+                      if char.uuid() == 8224:
+                          print("hello!", char.read())
+                          for ii in range(198):
+                              dataOut = char.read()
+                              print("Hi!", ii, dataOut)
+                              # T[ii] = char.read()
+                              pass
+                          pass
+            # conn.disconnect()
+            break
         except:
-            # start scanning again
-            bluetooth.start_scan(-1)
-            continue
-        #break
-    if BLEConnected:
-        time.sleep(1)
-        print("BLEConnected")
+            pass
+    else:
+        time.sleep(0.050)
+
+
+
+    #     #break
+    # if BLEConnected:
+    #     # if service.uuid() == 0x2020:
+    #     #     for char in chars:
+    #     #     chars = service.characteristics()
+    #     #     if chars.uuid() == 0x2020:
+    #     #         print("Reading array")
+    #     #         pass
+    #     time.sleep(5)
+    #     print("BLEConnected")

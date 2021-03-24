@@ -4,12 +4,38 @@ Gateway.
 
 """
 
-
+from array import *
+import pycom
+from pysense import Pysense
 from network import Bluetooth
 import ubinascii
 import time
 import machine
 import struct
+from LIS2HH12 import LIS2HH12
+
+pycom.heartbeat(False)
+py = Pysense()
+
+# ----------- IMU Setings: -----------
+li = LIS2HH12(py)
+# enable acceleration readings at 50Hz
+li.set_odr(6)
+# ODR_10_HZ
+# ODR_50_HZ
+# ODR_100_HZ
+# ODR_200_HZ
+# ODR_400_HZ
+# ODR_800_HZ
+
+# change the full-scale to 4g
+li.set_full_scale(0)
+# FULL_SCALE_2G -
+# FULL_SCALE_4G -
+# FULL_SCALE_8G -
+
+# set the interrupt pin as active low and open drain
+# li.set_register(CTRL5_REG, 3, 0, 3)
 
 BLEConnected = False
 
@@ -27,6 +53,16 @@ AccData = [[0, 0.384736286, 0.764539453, -0.738283483],
            [2, 0.387439833, 0.783275892, -1.032749873],
            [3, 0.394380345, 0.729525939, -1.132498242],
            [4, 0.387325897, 0.792395934, -1.027387233]]
+
+readArrayIndex = 0
+
+def acc_write_array(): #Interrupt pin.
+    global T
+    T=[]
+    for x in range(200):
+        add = [x, li.acceleration()]
+        T.append(add)
+    pass
 
 
 def writeToServer():
@@ -63,8 +99,26 @@ def char1_cb_handler(chr, data):
     # The data is a tuple containing the triggering event and the value if the event is a WRITE event.
     # We recommend fetching the event and value from the input parameter, and not via characteristic.event() and characteristic.value()
     events, value = data
+    global readArrayIndex
     if  events & Bluetooth.CHAR_READ_EVENT:
-        print('Read request on char 1')
+        print('Read request on char 1 {}', T[readArrayIndex][0])
+        readArrayIndex = readArrayIndex + 1
+
+        iteration = T[readArrayIndex][0]
+        x_data = T[readArrayIndex][1][0]
+        y_data = T[readArrayIndex][1][1]
+        z_data = T[readArrayIndex][1][2]
+
+        print(iteration, x_data, y_data, z_data)
+
+        chr1.value(iteration)
+
+        if readArrayIndex > 199:
+            print("Array Empty")
+            pass
+
+
+
 
 # def char2_cb_handler(chr, data):
 #     # The value is not used in this callback as the WRITE events are not processed.
@@ -99,9 +153,17 @@ char1_cb = chr1.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char1_cb_han
 
 #Max char size 0xFFFFFFFF Not correnct
 
+writeOnlyOnce=0
+
 while True:
     if BLEConnected:
         print("hello!")
+        if writeOnlyOnce<1:
+            writeOnlyOnce=1
+            acc_write_array()
+            print(T)
+
+
         # print(dataArray)
         # print(dataArray_byte)
         # # adv = bluetooth.get_adv()
