@@ -116,7 +116,7 @@ def char1_cb_handler(chr, data):
 
         print(iteration, x_data, y_data, z_data)
 
-        chr1.value(iteration_ba)
+        chr1.value(0x03)
         chr_x.value(x_data_ba)
         chr_y.value(y_data_ba)
         chr_z.value(z_data_ba)
@@ -138,17 +138,18 @@ def char1_cb_handler(chr, data):
 #         print('Read request on char 21')
 
 bluetooth = Bluetooth()
-bluetooth.set_advertisement(name='LoPy', service_uuid=b'1234567890123456')
+bluetooth.set_advertisement(name='LoPy', service_uuid=0x283B52D274704517BC39E852B24739EA)
 bluetooth.callback(trigger=Bluetooth.CLIENT_CONNECTED | Bluetooth.CLIENT_DISCONNECTED, handler=conn_cb)
 bluetooth.advertise(True)
 
-srv1 = bluetooth.service(uuid=0x2020, nbr_chars=4 ,isprimary=True)
+srv1 = bluetooth.service(uuid=0x6CADF9A03F4B4A228CBD283788B9EE5C, nbr_chars=4 ,isprimary=True)
+# srv2 = bluetooth.service(uuid=0x2021, nbr_chars=3 ,isprimary=True)
 #
-chr1 = srv1.characteristic(uuid=0x2020, properties=Bluetooth.PROP_READ, value=0x000000)
+chr1 = srv1.characteristic(uuid=0x283B52D274704517BC39E852B24739EA, properties=Bluetooth.PROP_READ, value=0x000000)
 char1_cb = chr1.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=char1_cb_handler)
-chr_x = srv1.characteristic(uuid=0x2021, properties=Bluetooth.PROP_READ, value=0x000000)
-chr_y = srv1.characteristic(uuid=0x2022, properties=Bluetooth.PROP_READ, value=0x000000)
-chr_z = srv1.characteristic(uuid=0x2023, properties=Bluetooth.PROP_READ, value=0x000000)
+chr_x = srv1.characteristic(uuid=0x0CE418AAE6164546B5EE3EC89E5975D9, properties=Bluetooth.PROP_READ, value=0x000000)
+chr_y = srv1.characteristic(uuid=0x80725E09370E4BD0A0A7DFB7E40BD31A, properties=Bluetooth.PROP_READ, value=0x000000)
+chr_z = srv1.characteristic(uuid=0xF35C90EF359A4E83BF5D209F9C3F1E6D, properties=Bluetooth.PROP_READ, value=0x000000)
 
 # char1_cb = chr_x.callback(trigger=Bluetooth.CHAR_READ_EVENT, handler=none)
 

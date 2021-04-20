@@ -134,6 +134,7 @@ while True:
         try:
             conn = bluetooth.connect(adv.mac)
             services = conn.services()
+            print("Services: ", services)
             for service in services:
               time.sleep(0.050)
               if type(service.uuid()) == bytes:
@@ -142,6 +143,7 @@ while True:
                   print('Reading chars from service = %x' % service.uuid())
               chars = service.characteristics()
               for char in chars:
+                  print("Char: ", chars)
                   # print(char.properties())
                   if (char.properties() & Bluetooth.PROP_READ): #
                       print('char {} value = {}'.format(char.uuid(), char.read()))
@@ -157,7 +159,7 @@ while True:
                       #         print("You ", dataOut)
                       #     pass
             conn.disconnect()
-            mainMQTT()
+            #mainMQTT()
             break
         except:
             pass

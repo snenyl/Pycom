@@ -31,7 +31,7 @@ ACC_G_DIV = 1000 * 65536
 
 class LIS2HH12:
 
-    ACC_I2CADDR = const(30)
+    ACC_I2CADDR = const(30) #1E
 
     PRODUCTID_REG = const(0x0F)
     CTRL1_REG = const(0x20)
