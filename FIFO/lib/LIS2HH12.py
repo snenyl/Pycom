@@ -28,6 +28,14 @@ ODR_800_HZ = const(6)
 
 ACC_G_DIV = 1000 * 65536
 
+#FIFO CTRL Standard
+FIFO_BYPASS = const(0)
+FIFO_FIFO_MODE = const(1)
+FIFO_STREAM_MODE = const(2)
+FIFO_STREAM_MODE_FIFO_TRIGGER = const(3)
+FIFO_BYPASS_STREAM_TRIGGER = const(4)
+FIFO_BYPASS_FIFO_TRIGGER = const(7)
+
 
 class LIS2HH12:
 
@@ -82,6 +90,10 @@ class LIS2HH12:
         # set the interrupt pin as active low and open drain
         self.set_register(CTRL5_REG, 3, 0, 3)
 
+        # set FIFO control registry             set_register(self, register, value, offset, mask):
+        self.set_register(FIFO_CTRL, FIFO_STREAM_MODE, 5, 7)
+        #self.i2c.writeto_mem(FIFO_CTRL,  2, b'\x48') # Stream mode 8samples  01001000 = 0x48
+
         # make a first read; comment this out, makes the readings go slow.
         #self.acceleration()
 
@@ -105,6 +117,10 @@ class LIS2HH12:
 
     def fifoSourceRead(self):
         fifo_output = self.i2c.readfrom_mem(ACC_I2CADDR , FIFO_SRC, 1)
+        return (fifo_output)
+
+    def fifoDataRead(self, samples):
+        fifo_output = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 6*samples)
         return (fifo_output)
 
     def roll(self):

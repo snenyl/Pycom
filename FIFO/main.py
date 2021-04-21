@@ -158,12 +158,37 @@ li = LIS2HH12(py)
 # # set the interrupt pin as active low and open drain
 # # li.set_register(CTRL5_REG, 3, 0, 3)
 
+#Configuration:
 
+
+
+
+li.acceleration()
 li.acceleration()
 
 time.sleep_ms(100)
 
-print(ubinascii.hexlify(li.accelerationOneGoRaw()))
+T = []
+
+for unit in range(0,200):
+    T.append(li.accelerationOneGoRaw())
+    pass
+
+time.sleep_ms(100)
+
+li.fifoDataRead(2) # Reading two samples
+li.fifoDataRead(2) # Reading two samples
+
+time.sleep_ms(100)
+
+li.fifoDataRead(8) # Reading eight samples 48byte
+li.fifoDataRead(8) # Reading eight samples 48byte
+
+time.sleep_ms(100)
+
+li.fifoDataRead(16) # Reading sixteen samples return 96byte
+li.fifoDataRead(16) # Reading sixteen samples return 96byte
+
 
 
 
@@ -174,4 +199,5 @@ print(ubinascii.hexlify(li.accelerationOneGoRaw()))
 
 while True:
 
-    T = [] # Reset array
+
+    pass
