@@ -163,9 +163,7 @@ li.acceleration()
 
 time.sleep_ms(100)
 
-li.accelerationOneGoRaw()
-
-print(li.accelerationOneGoRaw())
+print(ubinascii.hexlify(li.accelerationOneGoRaw()))
 
 
 
