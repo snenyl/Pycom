@@ -47,6 +47,8 @@ class LIS2HH12:
     ACC_Z_H_REG = const(0x2D)
     ACT_THS = const(0x1E)
     ACT_DUR = const(0x1F)
+    FIFO_CTRL = const(0x2E)
+    FIFO_SRC = const(0x2F)
 
     SCALES = {FULL_SCALE_2G: 4000, FULL_SCALE_4G: 8000, FULL_SCALE_8G: 16000}
     ODRS = [0, 10, 50, 100, 200, 400, 800]
@@ -80,8 +82,8 @@ class LIS2HH12:
         # set the interrupt pin as active low and open drain
         self.set_register(CTRL5_REG, 3, 0, 3)
 
-        # make a first read
-        self.acceleration()
+        # make a first read; comment this out, makes the readings go slow.
+        #self.acceleration()
 
     def acceleration(self):
         x = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 2)
@@ -93,6 +95,13 @@ class LIS2HH12:
         _mult = self.SCALES[self.full_scale] / ACC_G_DIV
         return (self.x[0] * _mult, self.y[0] * _mult, self.z[0] * _mult)
         #return(self.x, self.y, self.z)
+    def accelerationOneGo(self):
+        xyz = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 48)
+        return (xyz)
+
+    def fifoControlRead(self):
+        fifo_output = self.i2c.readfrom_mem(ACC_I2CADDR , FIFO_CTRL, 8)
+        return (fifo_output)
 
     def roll(self):
         x,y,z = self.acceleration()

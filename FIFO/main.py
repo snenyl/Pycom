@@ -158,7 +158,18 @@ li = LIS2HH12(py)
 # # set the interrupt pin as active low and open drain
 # # li.set_register(CTRL5_REG, 3, 0, 3)
 
+
 li.acceleration()
+
+time.sleep_ms(100)
+
+li.accelerationOneGo()
+
+time.sleep_ms(100)
+
+li.fifoControlRead()
+
+
 
 
 
