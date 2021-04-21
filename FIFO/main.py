@@ -163,11 +163,11 @@ li.acceleration()
 
 time.sleep_ms(100)
 
-li.accelerationOneGo()
+li.accelerationOneGoRaw()
 
-time.sleep_ms(100)
+print(li.accelerationOneGoRaw())
 
-li.fifoControlRead()
+
 
 
 

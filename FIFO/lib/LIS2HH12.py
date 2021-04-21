@@ -95,12 +95,16 @@ class LIS2HH12:
         _mult = self.SCALES[self.full_scale] / ACC_G_DIV
         return (self.x[0] * _mult, self.y[0] * _mult, self.z[0] * _mult)
         #return(self.x, self.y, self.z)
-    def accelerationOneGo(self):
-        xyz = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 48)
+    def accelerationOneGoRaw(self):
+        xyz = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 6) #Reading 6byte, 2byte for each direction
         return (xyz)
 
     def fifoControlRead(self):
-        fifo_output = self.i2c.readfrom_mem(ACC_I2CADDR , FIFO_CTRL, 8)
+        fifo_output = self.i2c.readfrom_mem(ACC_I2CADDR , FIFO_CTRL, 1)
+        return (fifo_output)
+
+    def fifoSourceRead(self):
+        fifo_output = self.i2c.readfrom_mem(ACC_I2CADDR , FIFO_SRC, 1)
         return (fifo_output)
 
     def roll(self):
