@@ -97,6 +97,10 @@ def acc_send_array():
             return(0)
     pass
 
+def acc_write_fifo(duration): #Interrupt pin.
+
+    pass
+
 
 # apin = ADC().channel(pin='P16')
 
@@ -137,49 +141,28 @@ T = []
 # ----------- IMU Setings: -----------
 li = LIS2HH12(py)
 # enable acceleration readings at 50Hz
-li.set_odr(6)
-# ODR_10_HZ
-# ODR_50_HZ
-# ODR_100_HZ
-# ODR_200_HZ
-# ODR_400_HZ
-# ODR_800_HZ
+# li.set_odr(6) # 0x20
+# # ODR_10_HZ
+# # ODR_50_HZ
+# # ODR_100_HZ
+# # ODR_200_HZ
+# # ODR_400_HZ
+# # ODR_800_HZ
+#
+# # change the full-scale to 2g
+# li.set_full_scale(0) #0x23
+# # FULL_SCALE_2G -
+# # FULL_SCALE_4G -
+# # FULL_SCALE_8G -
+#
+# # set the interrupt pin as active low and open drain
+# # li.set_register(CTRL5_REG, 3, 0, 3)
 
-# change the full-scale to 4g
-li.set_full_scale(0)
-# FULL_SCALE_2G -
-# FULL_SCALE_4G -
-# FULL_SCALE_8G -
-
-# set the interrupt pin as active low and open drain
-# li.set_register(CTRL5_REG, 3, 0, 3)
+li.acceleration()
 
 
 
 
 while True:
 
-#    acc_roll = int(li.roll()*1000)
-#    acc_pitch = int(li.pitch()*1000)
     T = [] # Reset array
-
-
-    start_time = time.time()*1000
-    acc_write_array(20)
-    end_time = time.time()*1000
-    duration_time_ms = (end_time - start_time)
-    print(duration_time_ms)
-    #print('Written ' str(len(T)) + ' lines in ' + str(duration_time))
-    #print(T)
-
-    if BLEConnected:
-        # char1.value(0xACFF)
-        # x_acc_char.value(0x34F3BD43)
-        # y_acc_char.value(0x36F3CE21)
-        # z_acc_char.value(0x38F3AD68)
-        acc_send_array()
-        #a = 0xFFFF
-        #char1.value(a)
-        #char1.value(T)
-        #char3.value(acc_pitch)
-        #print("Roll: " + str(acc_roll) + "Pitch: " + str(acc_pitch))

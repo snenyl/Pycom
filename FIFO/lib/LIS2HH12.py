@@ -72,10 +72,10 @@ class LIS2HH12:
             raise ValueError("LIS2HH12 not found")
 
         # enable acceleration readings at 50Hz
-        self.set_odr(ODR_50_HZ)
+        self.set_odr(ODR_800_HZ)
 
         # change the full-scale to 4g
-        self.set_full_scale(FULL_SCALE_4G)
+        self.set_full_scale(FULL_SCALE_2G)
 
         # set the interrupt pin as active low and open drain
         self.set_register(CTRL5_REG, 3, 0, 3)
