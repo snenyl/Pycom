@@ -217,7 +217,8 @@ T = []
 
 def pin_handler(arg):
     #print("Intrerupt detected!")
-    #li.fifoDataRead(10)
+    li.fifoDataRead(10)
+    print(i2c.readfrom_mem(ACC_I2CADDR , FIFO_SRC, 1))
     pass
 
 p_in = Pin('P13', mode=Pin.IN, pull=Pin.PULL_UP)
@@ -227,6 +228,8 @@ p_in.callback(Pin.IRQ_FALLING, pin_handler) # Pin.IRQ_FALLING | Pin.IRQ_RISING, 
 
 
 # acc_write_array_RAW(200) # Read raw data out
+
+
 
 #print("RAW: ",T[0][1])
 

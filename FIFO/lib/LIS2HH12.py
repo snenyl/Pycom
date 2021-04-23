@@ -91,7 +91,7 @@ class LIS2HH12:
         if (whoami[0] != 0x41):
             raise ValueError("LIS2HH12 not found")
 
-        # enable acceleration readings at 50Hz
+        # enable acceleration readings at 800Hz
         self.set_odr(ODR_800_HZ)
 
         # change the full-scale to 2g
@@ -106,14 +106,13 @@ class LIS2HH12:
         # set FIFO control registry (FIFO_FTH)                set_register(self, register, value, offset, mask):
         self.set_register(FIFO_CTRL, FTH_10_SAMPLE, 0, 4)
 
-        #FIFO Overrun signal on INT1:
-        # self.set_register(CTRL3_REG, 0, 5, 1)
-        # self.set_register(CTRL3_REG, 1, 2, 1)
-
         #FIFO Enable:
-        # self.i2c.writeto_mem(ACC_I2CADDR, register, reg)
-        control3 = bytearray(0x01010101)
-        self.i2c.writeto_mem(ACC_I2CADDR, CTRL3_REG, control3)
+        #config_Reg3 = b'\xc2' #11000010 - Enable FIFO and set FIFO threshold signal on INT1
+        config_Reg3 = b'\xc1' #11000001 - Enable FIFO and data ready on INT1
+        self.i2c.writeto_mem(ACC_I2CADDR, CTRL3_REG, config_Reg3)
+
+        #control3 = bytearray(0x01010101)
+        #self.i2c.writeto_mem(ACC_I2CADDR, CTRL3_REG, control3)
         #self.set_register(CTRL3_REG, 0, 0, 8)
 
 
