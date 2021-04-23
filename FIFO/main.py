@@ -12,7 +12,7 @@ from LIS2HH12 import LIS2HH12
 import ubinascii
 import binascii
 import struct
-#from machine import Pin
+from machine import Pin
 import machine
 from umqtt.simple2 import MQTTClient
 from network import WLAN
@@ -202,13 +202,8 @@ li = LIS2HH12(py)
 # n_interrupts = 0
 # n_interrupts_max = 200
 #
-# def pin_handler(arg):
-#     global n_interrupts
-#     n_interrupts = n_interrupts + 1
-#
-#
-# p_in = Pin('P13', mode=Pin.IN, pull=Pin.PULL_UP)
-# p_in.callback(Pin.IRQ_FALLING, pin_handler) # Pin.IRQ_FALLING | Pin.IRQ_RISING, pin_handler
+
+
 
 T = []
 
@@ -220,16 +215,25 @@ T = []
 #     A.append(li.fifoDataRead(10))
 #     pass
 
-PrivateWlanConfiguration()
+def pin_handler(arg):
+    #print("Intrerupt detected!")
+    #li.fifoDataRead(10)
+    pass
 
-acc_write_array_RAW(200)
+p_in = Pin('P13', mode=Pin.IN, pull=Pin.PULL_UP)
+p_in.callback(Pin.IRQ_FALLING, pin_handler) # Pin.IRQ_FALLING | Pin.IRQ_RISING, pin_handler
 
-print("RAW: ",T[0][1])
+#PrivateWlanConfiguration()
+
+
+# acc_write_array_RAW(200) # Read raw data out
+
+#print("RAW: ",T[0][1])
 
 A = []
 
 
-Test_data_unit = T[199][1] #f83f
+# Test_data_unit = T[199][1] #f83f
 
 ACC_G_DIV = 1000 * 65536
 _mult = 4000/ACC_G_DIV
@@ -275,7 +279,7 @@ for iteration_conversion in range(0,len(T)):
 #print(list[0],list[2],list[4])
 
 
-mainMQTT()
+# mainMQTT()
 
 print(A)
 

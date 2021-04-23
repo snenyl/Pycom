@@ -37,13 +37,13 @@ FIFO_BYPASS_STREAM_TRIGGER = const(4)
 FIFO_BYPASS_FIFO_TRIGGER = const(7)
 
 #FIFO CTRL Standard (FTH)
-FTH_1_SAMPLE = const(0)
-FTH_4_SAMPLE = const(4)
-FTH_8_SAMPLE = const(8)
-FTH_10_SAMPLE = const(30) # Stemmer
-FTH_16_SAMPLE = const(16)
-FTH_20_SAMPLE = const(20)
-FTH_30_SAMPLE = const(30)
+FTH_1_SAMPLE = const(0) # Need to be fixed (not working)
+FTH_4_SAMPLE = const(4) # Need to be fixed (not working)
+FTH_8_SAMPLE = const(8) # Need to be fixed (not working)
+FTH_10_SAMPLE = const(30) # Working
+FTH_16_SAMPLE = const(16) # Need to be fixed (not working)
+FTH_20_SAMPLE = const(20) # Need to be fixed (not working)
+FTH_30_SAMPLE = const(30) # Need to be fixed (not working)
 
 
 
@@ -101,14 +101,22 @@ class LIS2HH12:
         self.set_register(CTRL5_REG, 3, 0, 3)
 
         # set FIFO control registry (FIFO_MODE)            set_register(self, register, value, offset, mask):
-        #self.set_register(FIFO_CTRL, FIFO_STREAM_MODE, 5, 7)
+        self.set_register(FIFO_CTRL, FIFO_STREAM_MODE, 5, 7)
 
         # set FIFO control registry (FIFO_FTH)                set_register(self, register, value, offset, mask):
-        #self.set_register(FIFO_CTRL, FTH_10_SAMPLE, 0, 4)
+        self.set_register(FIFO_CTRL, FTH_10_SAMPLE, 0, 4)
 
         #FIFO Overrun signal on INT1:
-        #self.set_register(CTRL3_REG, 0, 5, 1)
-        #self.set_register(CTRL3_REG, 1, 2, 1)
+        # self.set_register(CTRL3_REG, 0, 5, 1)
+        # self.set_register(CTRL3_REG, 1, 2, 1)
+
+        #FIFO Enable:
+        # self.i2c.writeto_mem(ACC_I2CADDR, register, reg)
+        control3 = bytearray(0x01010101)
+        self.i2c.writeto_mem(ACC_I2CADDR, CTRL3_REG, control3)
+        #self.set_register(CTRL3_REG, 0, 0, 8)
+
+
 
         # Enable activity interrupt:
 
@@ -126,7 +134,7 @@ class LIS2HH12:
         return (self.x[0] * _mult, self.y[0] * _mult, self.z[0] * _mult)
         #return(self.x, self.y, self.z)
     def accelerationOneGoRaw(self):
-        xyz = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 6) #Reading 6byte, 2byte for each direction
+        xyz = self.i2c.readfrom_mem(ACC_I2CADDR , ACC_X_L_REG, 6) #Reading 6byte after 0x28, 2byte for each direction
         return (xyz)
 
     def fifoControlRead(self):
@@ -199,7 +207,7 @@ class LIS2HH12:
         self.i2c.writeto_mem(ACC_I2CADDR, ACT_DUR, _dur)
 
         # enable the activity/inactivity interrupt
-        self.set_register(CTRL3_REG, 1, 5, 1)
+        # self.set_register(CTRL3_REG, 1, 5, 1)
 
         self._user_handler = handler
         self.int_pin = Pin('P13', mode=Pin.IN)
