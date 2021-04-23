@@ -36,6 +36,16 @@ FIFO_STREAM_MODE_FIFO_TRIGGER = const(3)
 FIFO_BYPASS_STREAM_TRIGGER = const(4)
 FIFO_BYPASS_FIFO_TRIGGER = const(7)
 
+#FIFO CTRL Standard (FTH)
+FTH_1_SAMPLE = const(0)
+FTH_4_SAMPLE = const(4)
+FTH_8_SAMPLE = const(8)
+FTH_10_SAMPLE = const(30) # Stemmer
+FTH_16_SAMPLE = const(16)
+FTH_20_SAMPLE = const(20)
+FTH_30_SAMPLE = const(30)
+
+
 
 class LIS2HH12:
 
@@ -84,15 +94,23 @@ class LIS2HH12:
         # enable acceleration readings at 50Hz
         self.set_odr(ODR_800_HZ)
 
-        # change the full-scale to 4g
+        # change the full-scale to 2g
         self.set_full_scale(FULL_SCALE_2G)
 
         # set the interrupt pin as active low and open drain
         self.set_register(CTRL5_REG, 3, 0, 3)
 
-        # set FIFO control registry             set_register(self, register, value, offset, mask):
-        self.set_register(FIFO_CTRL, FIFO_STREAM_MODE, 5, 7)
-        #self.i2c.writeto_mem(FIFO_CTRL,  2, b'\x48') # Stream mode 8samples  01001000 = 0x48
+        # set FIFO control registry (FIFO_MODE)            set_register(self, register, value, offset, mask):
+        #self.set_register(FIFO_CTRL, FIFO_STREAM_MODE, 5, 7)
+
+        # set FIFO control registry (FIFO_FTH)                set_register(self, register, value, offset, mask):
+        #self.set_register(FIFO_CTRL, FTH_10_SAMPLE, 0, 4)
+
+        #FIFO Overrun signal on INT1:
+        #self.set_register(CTRL3_REG, 0, 5, 1)
+        #self.set_register(CTRL3_REG, 1, 2, 1)
+
+        # Enable activity interrupt:
 
         # make a first read; comment this out, makes the readings go slow.
         #self.acceleration()

@@ -12,6 +12,39 @@ from LIS2HH12 import LIS2HH12
 import ubinascii
 import binascii
 import struct
+#from machine import Pin
+import machine
+from umqtt.simple2 import MQTTClient
+from network import WLAN
+
+AccData = [[0, 0.384736286, 0.764539453, -0.738283483],
+           [1, 0.335393275, 0.787328572, -1.059825923],
+           [2, 0.387439833, 0.783275892, -1.032749873],
+           [3, 0.394380345, 0.729525939, -1.132498242],
+           [4, 0.387325897, 0.792395934, -1.027387233]]
+
+def PrivateWlanConfiguration():
+    wlan = WLAN(mode=WLAN.STA)
+    wlan.connect(ssid='OnePlus_7T_Pro', auth=(WLAN.WPA2, 'pycomTestingFacilityAtUiA'))
+    while not wlan.isconnected():
+        machine.idle()
+    print("WiFi connected succesfully")
+    print(wlan.ifconfig())
+    pass
+
+def mainMQTT(server="broker.hivemq.com"):
+    print("Connecting to MQTT server")
+    c = MQTTClient("umqtt_client", server)
+    c.connect()
+    for x in range(0, len(A)):
+        print("Publishing")
+        # PublishThis_ba = bytearray(struct.pack("b", A[x][0])) + bytearray(A[x][1]) + bytearray(A[x][2]) + bytearray(A[x][3])
+        PublishThis_ba = bytearray(struct.pack("b", A[x][0])) + bytearray(struct.pack("f", A[x][1])) + bytearray(struct.pack("f", A[x][2])) + bytearray(struct.pack("f", A[x][3]))
+        # PublishThis_ba = T[x]
+        c.publish(b"IKT520_LAB1", PublishThis_ba)
+        pass
+
+    c.disconnect()
 
 
 BLEConnected = False
@@ -50,6 +83,12 @@ def char1_cb_handler(chr, data):
 def acc_write_array(duration): #Interrupt pin.
     for x in range(duration):
         add = [x, li.acceleration()]
+        T.append(add)
+    pass
+
+def acc_write_array_RAW(duration): #Interrupt pin.
+    for x in range(duration):
+        add = [x, li.accelerationOneGoRaw()]
         T.append(add)
     pass
 
@@ -160,34 +199,63 @@ li = LIS2HH12(py)
 
 #Configuration:
 
-
-
-
-li.acceleration()
-li.acceleration()
-
-time.sleep_ms(100)
+# n_interrupts = 0
+# n_interrupts_max = 200
+#
+# def pin_handler(arg):
+#     global n_interrupts
+#     n_interrupts = n_interrupts + 1
+#
+#
+# p_in = Pin('P13', mode=Pin.IN, pull=Pin.PULL_UP)
+# p_in.callback(Pin.IRQ_FALLING, pin_handler) # Pin.IRQ_FALLING | Pin.IRQ_RISING, pin_handler
 
 T = []
 
-for unit in range(0,200):
-    T.append(li.accelerationOneGoRaw())
+# for unit in range(0,200):
+#     T.append(li.accelerationOneGoRaw())
+#     pass
+
+# for unit in range(0,100):
+#     A.append(li.fifoDataRead(10))
+#     pass
+
+PrivateWlanConfiguration()
+
+acc_write_array_RAW(200)
+
+print("RAW: ",T[0][1])
+
+A = []
+
+
+Test_data_unit = T[199][1] #f83f
+
+ACC_G_DIV = 1000 * 65536
+_mult = 4000/ACC_G_DIV
+
+value_after_unpack_array_x=[]
+
+
+for iteration_conversion in range(0,len(T)):
+    Test_data_unit = T[iteration_conversion][1]
+    Test_data_unit_array = bytearray(Test_data_unit)
+    value_after_unpack_array_x = struct.unpack('<h', Test_data_unit_array[0:2])
+    value_after_unpack_array_y = struct.unpack('<h', Test_data_unit_array[2:4])
+    value_after_unpack_array_z = struct.unpack('<h', Test_data_unit_array[4:6])
+
+    #print(value_after_unpack_array_x)
+
+    output_test = [iteration_conversion,value_after_unpack_array_x[0] * _mult, value_after_unpack_array_y[0] * _mult, value_after_unpack_array_z[0] * _mult,]
+    A.append(output_test)
     pass
 
-time.sleep_ms(100)
 
-li.fifoDataRead(2) # Reading two samples
-li.fifoDataRead(2) # Reading two samples
+# print("A: ", A)
+#
+# print("A_select: ", A[1][2])
 
-time.sleep_ms(100)
-
-li.fifoDataRead(8) # Reading eight samples 48byte
-li.fifoDataRead(8) # Reading eight samples 48byte
-
-time.sleep_ms(100)
-
-li.fifoDataRead(16) # Reading sixteen samples return 96byte
-li.fifoDataRead(16) # Reading sixteen samples return 96byte
+ # Converting to byte array
 
 
 
@@ -196,6 +264,20 @@ li.fifoDataRead(16) # Reading sixteen samples return 96byte
 
 
 
+
+# print("Output test: ",output_test_x, output_test_y, output_test_z)
+
+
+
+#print(bytearray(struct.pack("h", Test_data_unit)))
+
+#print(A)
+#print(list[0],list[2],list[4])
+
+
+mainMQTT()
+
+print(A)
 
 while True:
 
