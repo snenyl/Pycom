@@ -215,26 +215,16 @@ T = []
 #     A.append(li.fifoDataRead(10))
 #     pass
 
-def pin_handler(arg):
-    #print("Intrerupt detected!")
-    li.fifoDataRead(10)
-    print(i2c.readfrom_mem(ACC_I2CADDR , FIFO_SRC, 1))
-    pass
 
-p_in = Pin('P13', mode=Pin.IN, pull=Pin.PULL_UP)
-p_in.callback(Pin.IRQ_FALLING, pin_handler) # Pin.IRQ_FALLING | Pin.IRQ_RISING, pin_handler
 
 #PrivateWlanConfiguration()
 
-
 # acc_write_array_RAW(200) # Read raw data out
-
 
 
 #print("RAW: ",T[0][1])
 
 A = []
-
 
 # Test_data_unit = T[199][1] #f83f
 
@@ -243,19 +233,22 @@ _mult = 4000/ACC_G_DIV
 
 value_after_unpack_array_x=[]
 
+def convertYouData(arg):
+    for iteration_conversion in range(0,len(T)):
+        Test_data_unit = T[iteration_conversion][1]
+        Test_data_unit_array = bytearray(Test_data_unit)
+        value_after_unpack_array_x = struct.unpack('<h', Test_data_unit_array[0:2])
+        value_after_unpack_array_y = struct.unpack('<h', Test_data_unit_array[2:4])
+        value_after_unpack_array_z = struct.unpack('<h', Test_data_unit_array[4:6])
 
-for iteration_conversion in range(0,len(T)):
-    Test_data_unit = T[iteration_conversion][1]
-    Test_data_unit_array = bytearray(Test_data_unit)
-    value_after_unpack_array_x = struct.unpack('<h', Test_data_unit_array[0:2])
-    value_after_unpack_array_y = struct.unpack('<h', Test_data_unit_array[2:4])
-    value_after_unpack_array_z = struct.unpack('<h', Test_data_unit_array[4:6])
+        #print(value_after_unpack_array_x)
 
-    #print(value_after_unpack_array_x)
-
-    output_test = [iteration_conversion,value_after_unpack_array_x[0] * _mult, value_after_unpack_array_y[0] * _mult, value_after_unpack_array_z[0] * _mult,]
-    A.append(output_test)
+        output_test = [iteration_conversion,value_after_unpack_array_x[0] * _mult, value_after_unpack_array_y[0] * _mult, value_after_unpack_array_z[0] * _mult,]
+        A.append(output_test)
+        pass
+    return(A)
     pass
+
 
 
 # print("A: ", A)
@@ -284,7 +277,17 @@ for iteration_conversion in range(0,len(T)):
 
 # mainMQTT()
 
-print(A)
+def pin_handler(arg):
+    #print("Intrerupt detected!")
+    li.fifoDataRead(10)
+    #print(i2c.readfrom_mem(ACC_I2CADDR , FIFO_SRC, 1))
+    pass
+
+p_in = Pin('P13', mode=Pin.IN, pull=Pin.PULL_UP)
+p_in.callback(Pin.IRQ_FALLING, pin_handler) # Pin.IRQ_FALLING | Pin.IRQ_RISING, pin_handler
+
+li.fifoDataRead(10)
+# print(A)
 
 while True:
 
