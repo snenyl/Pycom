@@ -21,7 +21,7 @@ BLEConnected = False
 
 def PrivateWlanConfiguration():
     wlan = WLAN(mode=WLAN.STA)
-    wlan.connect(ssid='Foreidsgate_6', auth=(WLAN.WPA2, 'Pedersen'))
+    wlan.connect(ssid='OnePlus_7T_Pro', auth=(WLAN.WPA2, 'pycomTestingFacilityAtUiA'))
     while not wlan.isconnected():
         machine.idle()
     print("WiFi connected succesfully")
@@ -52,7 +52,7 @@ def mainMQTT(server="broker.hivemq.com"):
     c.connect()
     for x in range(0, len(AccData)):
         print("Publishing")
-        PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("f", AccData[x][1])) + bytearray(struct.pack("f", AccData[x][2])) + bytearray(struct.pack("f", AccData[x][3]))
+        PublishThis_ba = bytearray(struct.pack("b", AccData[x][0])) + bytearray(struct.pack("e", AccData[x][1])) + bytearray(struct.pack("e", AccData[x][2])) + bytearray(struct.pack("e", AccData[x][3]))
         # PublishThis_ba = T[x]
         c.publish(b"IKT520_LAB1", PublishThis_ba)
         pass
@@ -125,7 +125,7 @@ bluetooth.start_scan(-1)
 adv = None
 
 PrivateWlanConfiguration() # Wlan Network configuration
-# mainMQTT()
+mainMQTT()
 
 adv = None
 while True:
